@@ -1,0 +1,775 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - CyberCode Marketplace{% endblock %}
+
+{% block content %}
+<div class="product-detail">
+    <div class="container">
+        <!-- Breadcrumb Navigation -->
+        <nav class="breadcrumb">
+            <a href="/" class="breadcrumb-link">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <span class="breadcrumb-separator">/</span>
+            <a href="/category/{{ product.category }}" class="breadcrumb-link">{{ product.category }}</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">{{ product.name }}</span>
+        </nav>
+
+        <div class="product-detail-grid">
+            <!-- Left Column - Images & Code Preview -->
+            <div class="product-detail-left">
+                <!-- Product Image Gallery -->
+                <div class="product-gallery">
+                    <div class="main-image">
+                        <img src="{{ product.image }}" alt="{{ product.name }}" id="main-product-image">
+                        <div class="image-overlay">
+                            <button class="fullscreen-btn" onclick="openImageModal()">
+                                <i class="fas fa-expand"></i>
+                                View Fullscreen
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Thumbnail Gallery -->
+                    <div class="thumbnail-gallery">
+                        <div class="thumbnail active" onclick="changeMainImage('{{ product.image }}')">
+                            <img src="{{ product.image }}" alt="Main View">
+                        </div>
+                        <div class="thumbnail" onclick="changeMainImage('https://via.placeholder.com/400x250/1a1a1a/{{ product.category|replace(' ', '') }}?text=Demo+View')">
+                            <img src="https://via.placeholder.com/100x60/1a1a1a/00ff88?text=Demo" alt="Demo View">
+                        </div>
+                        <div class="thumbnail" onclick="changeMainImage('https://via.placeholder.com/400x250/1a1a1a/ff6600?text=Interface')">
+                            <img src="https://via.placeholder.com/100x60/1a1a1a/ff6600?text=UI" alt="Interface">
+                        </div>
+                        <div class="thumbnail" onclick="changeMainImage('https://via.placeholder.com/400x250/1a1a1a/8800ff?text=Features')">
+                            <img src="https://via.placeholder.com/100x60/1a1a1a/8800ff?text=Features" alt="Features">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Demo Video Section -->
+                <div class="demo-section">
+                    <h3><i class="fas fa-play-circle"></i> Live Demo</h3>
+                    <div class="demo-player">
+                        <div class="demo-placeholder">
+                            <i class="fas fa-play"></i>
+                            <span>Click to watch demo video</span>
+                        </div>
+                        <button class="play-demo-btn" onclick="playProductDemo()">
+                            <i class="fas fa-play"></i>
+                            Watch Demo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Code Preview Section -->
+                <div class="code-preview-section">
+                    <div class="code-header">
+                        <h3><i class="fas fa-code"></i> Code Preview</h3>
+                        <div class="code-actions">
+                            <button class="code-btn" onclick="copyCode()">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                            <button class="code-btn" onclick="expandCode()">
+                                <i class="fas fa-expand"></i> Expand
+                            </button>
+                        </div>
+                    </div>
+                    <pre class="code-block" id="code-preview"><code>{{ product.code_preview }}</code></pre>
+                </div>
+
+                <!-- Technical Specifications -->
+                <div class="tech-specs">
+                    <h3><i class="fas fa-cogs"></i> Technical Specifications</h3>
+                    <div class="spec-grid">
+                        <div class="spec-item">
+                            <span class="spec-label">Language:</span>
+                            <span class="spec-value">Python 3.8+</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Dependencies:</span>
+                            <span class="spec-value">Listed in requirements.txt</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Platform:</span>
+                            <span class="spec-value">Cross-platform</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">License:</span>
+                            <span class="spec-value">Commercial Use Allowed</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">File Size:</span>
+                            <span class="spec-value">~2.5 MB</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Last Updated:</span>
+                            <span class="spec-value">December 2024</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column - Product Info -->
+            <div class="product-detail-right">
+                <div class="product-info-card">
+                    <!-- Product Header -->
+                    <div class="product-header-info">
+                        <div class="product-badges">
+                            <span class="category-badge">{{ product.category }}</span>
+                            <span class="new-badge">Latest</span>
+                        </div>
+                        
+                        <h1 class="product-title">{{ product.name }}</h1>
+                        
+                        <div class="product-meta">
+                            <div class="rating-section">
+                                <div class="stars-large">
+                                    {% for i in range(5) %}
+                                        {% if i < product.rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="rating-text">{{ product.rating }}/5</span>
+                                <span class="review-count">({{ product.downloads }} downloads)</span>
+                            </div>
+                            
+                            <div class="product-stats-inline">
+                                <div class="stat-item">
+                                    <i class="fas fa-download"></i>
+                                    <span>{{ product.downloads }} downloads</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-eye"></i>
+                                    <span>{{ product.downloads * 3 }} views</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Recently updated</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Description -->
+                    <div class="product-description-full">
+                        <h3><i class="fas fa-info-circle"></i> Description</h3>
+                        <p>{{ product.description }}</p>
+                        <p>This premium software solution provides comprehensive automation capabilities with advanced features designed for professional use. Built with industry best practices and optimized for performance, scalability, and security.</p>
+                    </div>
+                    
+                    <!-- Features List -->
+                    <div class="features-section">
+                        <h3><i class="fas fa-star"></i> Key Features</h3>
+                        <div class="features-grid">
+                            {% for feature in product.features %}
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>{{ feature }}</span>
+                            </div>
+                            {% endfor %}
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>24/7 Customer Support</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Lifetime Updates</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Source Code Included</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Commercial License</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- What's Included -->
+                    <div class="package-contents">
+                        <h3><i class="fas fa-box"></i> Package Contents</h3>
+                        <div class="contents-list">
+                            <div class="content-item">
+                                <i class="fas fa-file-code"></i>
+                                <div class="content-details">
+                                    <span class="content-name">Complete Source Code</span>
+                                    <span class="content-desc">Fully commented Python files</span>
+                                </div>
+                            </div>
+                            <div class="content-item">
+                                <i class="fas fa-book"></i>
+                                <div class="content-details">
+                                    <span class="content-name">Documentation</span>
+                                    <span class="content-desc">Setup guide & API reference</span>
+                                </div>
+                            </div>
+                            <div class="content-item">
+                                <i class="fas fa-file-alt"></i>
+                                <div class="content-details">
+                                    <span class="content-name">Requirements File</span>
+                                    <span class="content-desc">All dependencies listed</span>
+                                </div>
+                            </div>
+                            <div class="content-item">
+                                <i class="fas fa-cog"></i>
+                                <div class="content-details">
+                                    <span class="content-name">Configuration Files</span>
+                                    <span class="content-desc">Ready-to-use configs</span>
+                                </div>
+                            </div>
+                            <div class="content-item">
+                                <i class="fas fa-graduation-cap"></i>
+                                <div class="content-details">
+                                    <span class="content-name">Video Tutorial</span>
+                                    <span class="content-desc">Step-by-step setup guide</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Purchase Section -->
+                    <div class="purchase-section">
+                        <div class="price-section">
+                            <div class="price-main">
+                                <span class="currency">$</span>
+                                <span class="price-amount">{{ "%.2f"|format(product.price) }}</span>
+                                <span class="price-period">one-time</span>
+                            </div>
+                            <div class="price-savings">
+                                <span class="original-price">${{ "%.2f"|format(product.price * 1.5) }}</span>
+                                <span class="discount-badge">33% OFF</span>
+                            </div>
+                        </div>
+                        
+                        <div class="purchase-actions">
+                            <button class="btn-purchase-main" onclick="purchaseProduct({{ product.id }})">
+                                <i class="fas fa-shopping-cart"></i>
+                                Buy Now - Instant Download
+                            </button>
+                            
+                            <div class="purchase-options">
+                                <button class="btn-add-cart" onclick="addToCart({{ product.id }})">
+                                    <i class="fas fa-plus"></i>
+                                    Add to Cart
+                                </button>
+                                <button class="btn-wishlist" onclick="addToWishlist({{ product.id }})">
+                                    <i class="fas fa-heart"></i>
+                                    Wishlist
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Purchase Guarantee -->
+                        <div class="purchase-guarantee">
+                            <div class="guarantee-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>30-day money-back guarantee</span>
+                            </div>
+                            <div class="guarantee-item">
+                                <i class="fas fa-download"></i>
+                                <span>Instant download after purchase</span>
+                            </div>
+                            <div class="guarantee-item">
+                                <i class="fas fa-lock"></i>
+                                <span>Secure payment processing</span>
+                            </div>
+                        </div>
+
+                        <!-- Payment Methods -->
+                        <div class="payment-methods">
+                            <span class="payment-label">We accept:</span>
+                            <div class="payment-icons">
+                                <i class="fab fa-cc-visa"></i>
+                                <i class="fab fa-cc-mastercard"></i>
+                                <i class="fab fa-cc-paypal"></i>
+                                <i class="fab fa-bitcoin"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Support -->
+                    <div class="support-section">
+                        <h4><i class="fas fa-headset"></i> Need Help?</h4>
+                        <p>Our technical support team is available 24/7 to assist you.</p>
+                        <div class="support-actions">
+                            <a href="#" class="support-link">
+                                <i class="fab fa-telegram"></i> Telegram Support
+                            </a>
+                            <a href="#" class="support-link">
+                                <i class="fas fa-envelope"></i> Email Support
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Products -->
+        <section class="related-products">
+            <h2><i class="fas fa-layer-group"></i> Related Products</h2>
+            <div class="related-grid">
+                <!-- You can add related products here -->
+                <div class="related-item">
+                    <img src="https://via.placeholder.com/200x120/1a1a1a/00ff88?text=Related+1" alt="Related Product">
+                    <h4>Similar Bot Framework</h4>
+                    <span class="related-price">$39.99</span>
+                </div>
+                <div class="related-item">
+                    <img src="https://via.placeholder.com/200x120/1a1a1a/ff0088?text=Related+2" alt="Related Product">
+                    <h4>Advanced Automation</h4>
+                    <span class="related-price">$59.99</span>
+                </div>
+                <div class="related-item">
+                    <img src="https://via.placeholder.com/200x120/1a1a1a/8800ff?text=Related+3" alt="Related Product">
+                    <h4>Pro Developer Tools</h4>
+                    <span class="related-price">$89.99</span>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Image Modal -->
+<div class="image-modal" id="image-modal">
+    <div class="image-modal-content">
+        <button class="image-modal-close" onclick="closeImageModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="modal-image" src="" alt="Product Image">
+    </div>
+</div>
+
+<!-- Code Expansion Modal -->
+<div class="code-modal" id="code-modal">
+    <div class="code-modal-content">
+        <div class="code-modal-header">
+            <h3>Full Code Preview - {{ product.name }}</h3>
+            <div class="code-modal-actions">
+                <button class="code-btn" onclick="copyFullCode()">
+                    <i class="fas fa-copy"></i> Copy All
+                </button>
+                <button class="code-btn" onclick="downloadCode()">
+                    <i class="fas fa-download"></i> Download
+                </button>
+                <button class="code-modal-close" onclick="closeCodeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="code-modal-body">
+            <pre id="full-code-preview"><code>{{ product.code_preview }}</code></pre>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Additional styles specific to product detail page */
+.product-detail {
+    padding: 2rem 0;
+    min-height: 80vh;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.breadcrumb-link {
+    color: var(--accent-green);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb-link:hover {
+    color: var(--accent-cyan);
+}
+
+.breadcrumb-separator {
+    margin: 0 1rem;
+    color: var(--text-muted);
+}
+
+.breadcrumb-current {
+    color: var(--text-secondary);
+}
+
+.product-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
+
+.product-gallery {
+    margin-bottom: 2rem;
+}
+
+.main-image {
+    position: relative;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.main-image img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.main-image:hover .image-overlay {
+    opacity: 1;
+}
+
+.fullscreen-btn {
+    background: var(--accent-green);
+    color: var(--primary-bg);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    transition: all 0.3s ease;
+}
+
+.thumbnail-gallery {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.thumbnail {
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.thumbnail.active {
+    border-color: var(--accent-green);
+}
+
+.thumbnail img {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+}
+
+.product-info-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 2rem;
+    position: sticky;
+    top: 100px;
+}
+
+.product-badges {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.category-badge {
+    background: var(--accent-purple);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+}
+
+.new-badge {
+    background: var(--accent-green);
+    color: var(--primary-bg);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+}
+
+.product-title {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.stars-large i {
+    color: var(--accent-orange);
+    font-size: 1.2rem;
+    margin-right: 0.2rem;
+}
+
+.price-section {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(0, 255, 136, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.price-main {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.currency {
+    font-size: 1.5rem;
+    color: var(--accent-green);
+}
+
+.price-amount {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--accent-green);
+}
+
+.price-period {
+    color: var(--text-muted);
+}
+
+.btn-purchase-main {
+    width: 100%;
+    background: linear-gradient(45deg, var(--accent-green), var(--accent-cyan));
+    color: var(--primary-bg);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-purchase-main:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 255, 136, 0.3);
+}
+
+.purchase-options {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-add-cart,
+.btn-wishlist {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-add-cart:hover {
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+}
+
+.btn-wishlist:hover {
+    border-color: var(--accent-pink);
+    color: var(--accent-pink);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.feature-item i {
+    color: var(--accent-green);
+}
+
+.related-products {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.related-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.related-item:hover {
+    transform: translateY(-5px);
+}
+
+.related-item img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+.related-price {
+    color: var(--accent-green);
+    font-weight: 600;
+}
+
+/* Modal Styles */
+.image-modal,
+.code-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.image-modal-content {
+    position: relative;
+    margin: 5% auto;
+    width: 90%;
+    max-width: 800px;
+}
+
+.image-modal-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+#modal-image {
+    width: 100%;
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+    .product-detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .product-info-card {
+        position: relative;
+        top: auto;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+// Additional JavaScript for product detail page
+function changeMainImage(src) {
+    document.getElementById('main-product-image').src = src;
+    
+    // Update active thumbnail
+    document.querySelectorAll('.thumbnail').forEach(thumb => {
+        thumb.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+}
+
+function openImageModal() {
+    const modal = document.getElementById('image-modal');
+    const modalImage = document.getElementById('modal-image');
+    const mainImage = document.getElementById('main-product-image');
+    
+    modalImage.src = mainImage.src;
+    modal.style.display = 'block';
+}
+
+function closeImageModal() {
+    document.getElementById('image-modal').style.display = 'none';
+}
+
+function copyCode() {
+    const codeBlock = document.getElementById('code-preview');
+    navigator.clipboard.writeText(codeBlock.textContent);
+    
+    // Show feedback
+    const btn = event.currentTarget;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+    }, 2000);
+}
+
+function expandCode() {
+    const modal = document.getElementById('code-modal');
+    modal.style.display = 'block';
+}
+
+function closeCodeModal() {
+    document.getElementById('code-modal').style.display = 'none';
+}
+
+function addToCart(productId) {
+    // Implement cart functionality
+    console.log('Added to cart:', productId);
+    alert('Product added to cart!');
+}
+
+function addToWishlist(productId) {
+    // Implement wishlist functionality
+    console.log('Added to wishlist:', productId);
+    alert('Product added to wishlist!');
+}
+
+function playProductDemo() {
+    // Implement demo video functionality
+    alert('Demo video would play here. Connect to your video hosting service.');
+}
+</script>
+{% endblock %}

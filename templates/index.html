@@ -1,0 +1,1263 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-text">
+            <h1 class="hero-title">
+                <span class="glitch-text" data-text="PREMIUM SOFTWARE">PREMIUM SOFTWARE</span>
+                <br>
+                <span class="hero-subtitle">& AUTOMATION SCRIPTS</span>
+            </h1>
+            <p class="hero-description">
+                Unlock the power of automation with our collection of premium bots, scripts, and tools.
+                Built by developers, for developers. All with full source code and lifetime support.
+            </p>
+            
+            <!-- Hero CTAs -->
+            <div class="hero-ctas">
+                {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('login') }}" class="cta-btn primary">
+                        <i class="fas fa-rocket"></i>
+                        Get Started Free
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('user_dashboard') }}" class="cta-btn primary">
+                        <i class="fas fa-tachometer-alt"></i>
+                        My Dashboard
+                    </a>
+                {% endif %}
+                
+                <a href="#products" class="cta-btn secondary">
+                    <i class="fas fa-eye"></i>
+                    Browse Products
+                </a>
+                
+                <a href="https://t.me/Sujan_bhaiii" target="_blank" class="cta-btn telegram">
+                    <i class="fab fa-telegram"></i>
+                    Contact on Telegram
+                </a>
+            </div>
+            
+            <!-- Hero Stats -->
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">{{ products|length }}+</span>
+                    <span class="stat-label">Premium Tools</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">
+                        {% set total_downloads = 0 %}
+                        {% for product in products %}
+                            {% set total_downloads = total_downloads + product.downloads %}
+                        {% endfor %}
+                        {{ total_downloads }}+
+                    </span>
+                    <span class="stat-label">Downloads</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">Support</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">
+                        {% if products %}
+                            {{ "%.1f"|format((products|sum(attribute='rating'))/products|length) }}★
+                        {% else %}
+                            5.0★
+                        {% endif %}
+                    </span>
+                    <span class="stat-label">Avg Rating</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-visual">
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <div class="terminal-buttons">
+                        <span class="btn-red"></span>
+                        <span class="btn-yellow"></span>
+                        <span class="btn-green"></span>
+                    </div>
+                    <span class="terminal-title">user@cybercode:~$</span>
+                </div>
+                <div class="terminal-body">
+                    <div class="terminal-line">
+                        <span class="prompt">$</span> <span class="command">pip install cybercode-premium</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="success">✓</span> <span class="output">Successfully installed premium tools</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="prompt">$</span> <span class="command">python telegram_bot.py --start</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="info">→</span> <span class="output">Bot initialized and running...</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="success">✓</span> <span class="output">Connected to Telegram API</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="info">→</span> <span class="output">Awaiting commands...</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="cursor">█</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Floating Elements -->
+            <div class="floating-elements">
+                <div class="floating-icon" style="animation-delay: 0s;">
+                    <i class="fab fa-python"></i>
+                </div>
+                <div class="floating-icon" style="animation-delay: 1s;">
+                    <i class="fab fa-telegram"></i>
+                </div>
+                <div class="floating-icon" style="animation-delay: 2s;">
+                    <i class="fab fa-discord"></i>
+                </div>
+                <div class="floating-icon" style="animation-delay: 3s;">
+                    <i class="fas fa-robot"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Categories -->
+<section class="categories" id="categories">
+    <div class="container">
+        <h2 class="section-title">
+            <i class="fas fa-layer-group"></i>
+            Explore Categories
+        </h2>
+        <p class="section-subtitle">Discover powerful automation tools for every use case</p>
+        
+        <div class="category-grid">
+            {% if categories %}
+                {% for category in categories %}
+                    <a href="{{ url_for('category_products', category_id=category.id) }}" class="category-card">
+                        <div class="category-icon">
+                            <i class="{{ category.icon_class or 'fas fa-code' }}"></i>
+                        </div>
+                        <h3>{{ category.name }}</h3>
+                        <p>{{ category.description or 'Professional automation tools' }}</p>
+                        <span class="category-count">
+                            {{ category.products|selectattr('is_active')|list|length }} Tools
+                        </span>
+                        <div class="category-overlay">
+                            <span class="view-category">View Category →</span>
+                        </div>
+                    </a>
+                {% endfor %}
+            {% else %}
+                <!-- Fallback categories if none in database -->
+                <a href="/category/1" class="category-card">
+                    <div class="category-icon">
+                        <i class="fab fa-telegram"></i>
+                    </div>
+                    <h3>Telegram Bots</h3>
+                    <p>Advanced admin panels, user management, and automation tools</p>
+                    <span class="category-count">3 Tools</span>
+                </a>
+                
+                <a href="/category/2" class="category-card">
+                    <div class="category-icon">
+                        <i class="fab fa-discord"></i>
+                    </div>
+                    <h3>Discord Bots</h3>
+                    <p>Server management, moderation, and community tools</p>
+                    <span class="category-count">2 Tools</span>
+                </a>
+                
+                <a href="/category/3" class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>Automation</h3>
+                    <p>Social media, file management, and workflow automation</p>
+                    <span class="category-count">4 Tools</span>
+                </a>
+                
+                <a href="/category/4" class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Trading Tools</h3>
+                    <p>Crypto trading bots and market analysis tools</p>
+                    <span class="category-count">2 Tools</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Products Grid -->
+<section class="products" id="products">
+    <div class="container">
+        <div class="products-header">
+            <h2 class="section-title">
+                <i class="fas fa-code"></i>
+                Premium Software Collection
+            </h2>
+            <p class="section-subtitle">Hand-crafted tools with full source code, documentation, and support</p>
+            
+            <div class="products-controls">
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all">All Products</button>
+                    {% for category in categories %}
+                        <button class="filter-tab" data-filter="{{ category.name }}">{{ category.name }}</button>
+                    {% endfor %}
+                </div>
+                
+                <div class="sort-controls">
+                    <select id="sort-select" class="sort-select">
+                        <option value="featured">Featured</option>
+                        <option value="newest">Newest First</option>
+                        <option value="popular">Most Popular</option>
+                        <option value="rating">Highest Rated</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        {% if products %}
+            <div class="products-grid" id="products-grid">
+                {% for product in products %}
+                    {% if product.is_active %}
+                        <div class="product-card" 
+                             data-category="{{ product.category.name }}"
+                             data-price="{{ product.price }}"
+                             data-rating="{{ product.rating }}"
+                             data-downloads="{{ product.downloads }}"
+                             data-created="{{ product.created_at.timestamp() }}">
+                            
+                            <div class="product-header">
+                                <div class="product-image">
+                                    {% if product.media_files and product.media_files|selectattr('is_primary')|list %}
+                                        {% set primary_image = product.media_files|selectattr('is_primary')|first %}
+                                        <img src="{{ url_for('uploaded_file', filename=primary_image.file_path) }}" 
+                                             alt="{{ product.name }}" loading="lazy">
+                                    {% elif product.image_url %}
+                                        <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy">
+                                    {% else %}
+                                        <img src="https://via.placeholder.com/400x250/1a1a1a/00ff88?text={{ product.name|replace(' ', '+') }}" 
+                                             alt="{{ product.name }}" loading="lazy">
+                                    {% endif %}
+                                    
+                                    <div class="product-overlay">
+                                        <button class="demo-btn" onclick="viewDemo({{ product.id }})">
+                                            <i class="fas fa-play"></i>
+                                            View Demo
+                                        </button>
+                                        <button class="preview-btn" onclick="previewCode({{ product.id }})">
+                                            <i class="fas fa-code"></i>
+                                            Code Preview
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="product-badges">
+                                    <span class="product-badge category-badge">{{ product.category.name }}</span>
+                                    {% if (datetime.utcnow() - product.created_at).days < 7 %}
+                                        <span class="product-badge new-badge">New</span>
+                                    {% endif %}
+                                    {% if product.downloads > 1000 %}
+                                        <span class="product-badge popular-badge">Popular</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="product-content">
+                                <div class="product-title">
+                                    <h3>{{ product.name }}</h3>
+                                    <div class="product-rating">
+                                        <div class="stars">
+                                            {% for i in range(5) %}
+                                                {% if i < product.rating %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <span class="rating-value">{{ product.rating }}</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="product-description">{{ product.description }}</p>
+                                
+                                <div class="product-features">
+                                    {% if product.features %}
+                                        {% set features_list = product.features.split('\n') if product.features else [] %}
+                                        {% for feature in features_list[:3] %}
+                                            <span class="feature-tag">
+                                                <i class="fas fa-check"></i>
+                                                {{ feature.strip() }}
+                                            </span>
+                                        {% endfor %}
+                                        {% if features_list|length > 3 %}
+                                            <span class="feature-more">+{{ features_list|length - 3 }} more</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="product-stats">
+                                    <div class="stat">
+                                        <i class="fas fa-download"></i>
+                                        <span>{{ product.downloads }}</span>
+                                    </div>
+                                    <div class="stat">
+                                        <i class="fas fa-code"></i>
+                                        <span>Python</span>
+                                    </div>
+                                    <div class="stat">
+                                        <i class="fas fa-shield-alt"></i>
+                                        <span>Secure</span>
+                                    </div>
+                                    <div class="stat">
+                                        <i class="fas fa-clock"></i>
+                                        <span>{{ time_ago(product.updated_at) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="product-footer">
+                                <div class="product-price">
+                                    <span class="price">${{ "%.2f"|format(product.price) }}</span>
+                                    <span class="price-label">One-time purchase</span>
+                                </div>
+                                <div class="product-actions">
+                                    <button class="btn-secondary" onclick="viewDetails({{ product.id }})">
+                                        <i class="fas fa-info-circle"></i>
+                                        Details
+                                    </button>
+                                    {% if current_user.is_authenticated %}
+                                        <button class="btn-primary" onclick="contactForPurchase({{ product.id }})">
+                                            <i class="fab fa-telegram"></i>
+                                            Buy Now
+                                        </button>
+                                    {% else %}
+                                        <button class="btn-primary" onclick="loginToPurchase()">
+                                            <i class="fas fa-sign-in-alt"></i>
+                                            Login to Buy
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            
+            <!-- Load More Button -->
+            <div class="load-more-section">
+                <button class="load-more-btn" onclick="loadMoreProducts()" style="display: none;">
+                    <i class="fas fa-plus"></i>
+                    Load More Products
+                </button>
+            </div>
+        {% else %}
+            <!-- No Products State -->
+            <div class="no-products">
+                <div class="no-products-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h3>Coming Soon!</h3>
+                <p>We're working hard to bring you amazing software tools. Check back soon or contact us for updates.</p>
+                <div class="no-products-actions">
+                    <a href="https://t.me/Sujan_bhaiii" target="_blank" class="btn-primary">
+                        <i class="fab fa-telegram"></i>
+                        Get Notified
+                    </a>
+                    {% if current_user.is_authenticated and current_user.is_admin %}
+                        <a href="/admin/" class="btn-secondary">
+                            <i class="fas fa-plus"></i>
+                            Add Products
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">
+            <i class="fas fa-star"></i>
+            Why Choose CyberCode?
+        </h2>
+        <p class="section-subtitle">Professional software solutions with unmatched quality and support</p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Secure & Reliable</h3>
+                <p>All scripts are thoroughly tested and come with security best practices built-in. No malware, no backdoors.</p>
+                <div class="feature-highlight">
+                    <i class="fas fa-check"></i>
+                    <span>Code security audit included</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3>24/7 Support</h3>
+                <p>Get help when you need it with our dedicated support team via Telegram and live chat.</p>
+                <div class="feature-highlight">
+                    <i class="fas fa-clock"></i>
+                    <span>Average response: 15 minutes</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <h3>Lifetime Updates</h3>
+                <p>Stay current with the latest features and security patches delivered automatically for life.</p>
+                <div class="feature-highlight">
+                    <i class="fas fa-infinity"></i>
+                    <span>Free updates forever</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h3>Full Source Code</h3>
+                <p>Complete, commented source code allows you to customize and learn from professional implementations.</p>
+                <div class="feature-highlight">
+                    <i class="fas fa-file-code"></i>
+                    <span>100% source code included</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h3>Instant Delivery</h3>
+                <p>Get your software immediately after purchase via Telegram. No waiting, no delays.</p>
+                <div class="feature-highlight">
+                    <i class="fas fa-bolt"></i>
+                    <span>Delivered in minutes</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <h3>Money-back Guarantee</h3>
+                <p>Not satisfied? Get a full refund within 30 days, no questions asked.</p>
+                <div class="feature-highlight">
+                    <i class="fas fa-undo"></i>
+                    <span>30-day guarantee</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials">
+    <div class="container">
+        <h2 class="section-title">
+            <i class="fas fa-quote-left"></i>
+            What Our Customers Say
+        </h2>
+        <p class="section-subtitle">Join thousands of satisfied developers worldwide</p>
+        
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>"The Telegram admin bot saved me hours of work every day. The code quality is exceptional and the support is amazing!"</p>
+                </div>
+                <div class="testimonial-author">
+                    <div class="author-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="author-info">
+                        <strong>Alex Johnson</strong>
+                        <span>Discord Server Owner</span>
+                    </div>
+                    <div class="testimonial-rating">
+                        {% for i in range(5) %}
+                            <i class="fas fa-star"></i>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>"Professional quality scripts with excellent documentation. The trading bot has been incredibly profitable!"</p>
+                </div>
+                <div class="testimonial-author">
+                    <div class="author-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="author-info">
+                        <strong>Sarah Chen</strong>
+                        <span>Crypto Trader</span>
+                    </div>
+                    <div class="testimonial-rating">
+                        {% for i in range(5) %}
+                            <i class="fas fa-star"></i>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>"Fast delivery, great communication, and the automation tools work perfectly. Highly recommended!"</p>
+                </div>
+                <div class="testimonial-author">
+                    <div class="author-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="author-info">
+                        <strong>Mike Rodriguez</strong>
+                        <span>Software Developer</span>
+                    </div>
+                    <div class="testimonial-rating">
+                        {% for i in range(5) %}
+                            <i class="fas fa-star"></i>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to Automate Your Workflow?</h2>
+            <p>Join thousands of developers who trust CyberCode for their automation needs</p>
+            <div class="cta-actions">
+                {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('login') }}" class="btn-cta primary">
+                        <i class="fas fa-rocket"></i>
+                        Start Your Journey
+                    </a>
+                {% endif %}
+                <a href="https://t.me/Sujan_bhaiii" target="_blank" class="btn-cta secondary">
+                    <i class="fab fa-telegram"></i>
+                    Chat with Us
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Code Preview Modal -->
+<div class="modal" id="demo-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-title">Code Preview</h3>
+            <button class="modal-close" onclick="closeDemo()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <pre id="code-preview"><code></code></pre>
+            <div class="modal-actions">
+                <button class="modal-btn" onclick="copyCode()">
+                    <i class="fas fa-copy"></i>
+                    Copy Code
+                </button>
+                <button class="modal-btn" onclick="downloadCode()">
+                    <i class="fas fa-download"></i>
+                    Download Sample
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Additional styles for enhanced homepage */
+
+/* Hero CTAs */
+.hero-ctas {
+    display: flex;
+    gap: 1rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.cta-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.cta-btn.primary {
+    background: linear-gradient(45deg, var(--accent-green), var(--accent-cyan));
+    color: var(--primary-bg);
+}
+
+.cta-btn.secondary {
+    background: transparent;
+    color: var(--accent-green);
+    border: 2px solid var(--accent-green);
+}
+
+.cta-btn.telegram {
+    background: #0088cc;
+    color: white;
+}
+
+.cta-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 255, 136, 0.3);
+}
+
+/* Floating Elements */
+.floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.floating-icon {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-green);
+    font-size: 1.5rem;
+    animation: float 6s ease-in-out infinite;
+}
+
+.floating-icon:nth-child(1) { top: 10%; right: 10%; }
+.floating-icon:nth-child(2) { top: 60%; right: 15%; }
+.floating-icon:nth-child(3) { top: 30%; right: 5%; }
+.floating-icon:nth-child(4) { top: 80%; right: 25%; }
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+/* Product Controls */
+.products-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    gap: 2rem;
+}
+
+.sort-select {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-family: var(--font-mono);
+}
+
+/* Product Badges */
+.product-badges {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.product-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.category-badge {
+    background: var(--accent-purple);
+    color: white;
+}
+
+.new-badge {
+    background: var(--accent-green);
+    color: var(--primary-bg);
+}
+
+.popular-badge {
+    background: var(--accent-orange);
+    color: white;
+}
+
+/* Category Card Enhancements */
+.category-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.category-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 255, 136, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.category-card:hover .category-overlay {
+    opacity: 1;
+}
+
+.view-category {
+    color: var(--primary-bg);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+/* Features Enhancement */
+.feature-highlight {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background: rgba(0, 255, 136, 0.1);
+    border-radius: 5px;
+    border-left: 3px solid var(--accent-green);
+}
+
+.feature-highlight i {
+    color: var(--accent-green);
+}
+
+.feature-highlight span {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Testimonials */
+.testimonials {
+    padding: 4rem 0;
+    background: var(--secondary-bg);
+}
+
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.testimonial-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 2rem;
+    transition: transform 0.3s ease;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-5px);
+}
+
+.testimonial-content p {
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.author-avatar {
+    width: 50px;
+    height: 50px;
+    background: var(--accent-green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-bg);
+}
+
+.author-info strong {
+    color: var(--text-primary);
+    display: block;
+}
+
+.author-info span {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.testimonial-rating {
+    margin-left: auto;
+    color: var(--accent-orange);
+}
+
+/* CTA Section */
+.cta-section {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+    color: var(--primary-bg);
+}
+
+.cta-content {
+    text-align: center;
+}
+
+.cta-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.cta-content p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.cta-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn-cta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.btn-cta.primary {
+    background: var(--primary-bg);
+    color: var(--accent-green);
+}
+
+.btn-cta.secondary {
+    background: transparent;
+    color: var(--primary-bg);
+    border: 2px solid var(--primary-bg);
+}
+
+.btn-cta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* No Products State */
+.no-products {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+}
+
+.no-products-icon {
+    font-size: 4rem;
+    color: var(--accent-green);
+    margin-bottom: 2rem;
+}
+
+.no-products h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 2rem;
+}
+
+.no-products p {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.no-products-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Load More */
+.load-more-section {
+    text-align: center;
+    margin-top: 3rem;
+}
+
+.load-more-btn {
+    background: var(--accent-green);
+    color: var(--primary-bg);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 auto;
+}
+
+.load-more-btn:hover {
+    background: var(--accent-cyan);
+    transform: translateY(-2px);
+}
+
+/* Modal Enhancements */
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: center;
+}
+
+.modal-btn {
+    background: var(--accent-green);
+    color: var(--primary-bg);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal-btn:hover {
+    background: var(--accent-cyan);
+}
+
+@media (max-width: 768px) {
+    .hero-ctas {
+        justify-content: center;
+    }
+    
+    .cta-btn {
+        flex: 1;
+        min-width: 200px;
+        justify-content: center;
+    }
+    
+    .products-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-tabs {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .cta-actions,
+    .no-products-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .floating-elements {
+        display: none;
+    }
+}
+</style>
+
+<script>
+// Enhanced JavaScript for homepage functionality
+
+// Product filtering and sorting
+document.addEventListener('DOMContentLoaded', function() {
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    const sortSelect = document.getElementById('sort-select');
+    const productCards = document.querySelectorAll('.product-card');
+    
+    // Filter functionality
+    filterTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            filterTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filter = this.dataset.filter;
+            filterProducts(filter);
+        });
+    });
+    
+    // Sort functionality
+    if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+            sortProducts(this.value);
+        });
+    }
+    
+    function filterProducts(filter) {
+        productCards.forEach(card => {
+            if (filter === 'all' || card.dataset.category === filter) {
+                card.style.display = 'block';
+                card.style.animation = 'fadeInUp 0.5s ease-out';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        updateResultsCount();
+    }
+    
+    function sortProducts(sortBy) {
+        const grid = document.getElementById('products-grid');
+        const cards = Array.from(productCards);
+        
+        cards.sort((a, b) => {
+            switch(sortBy) {
+                case 'newest':
+                    return parseFloat(b.dataset.created) - parseFloat(a.dataset.created);
+                case 'popular':
+                    return parseInt(b.dataset.downloads) - parseInt(a.dataset.downloads);
+                case 'rating':
+                    return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
+                case 'price-low':
+                    return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+                case 'price-high':
+                    return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+                default:
+                    return 0;
+            }
+        });
+        
+        cards.forEach(card => grid.appendChild(card));
+    }
+    
+    function updateResultsCount() {
+        const visibleCards = Array.from(productCards).filter(card => 
+            card.style.display !== 'none'
+        );
+        
+        // Update any results counter if it exists
+        const counter = document.getElementById('results-counter');
+        if (counter) {
+            counter.textContent = `${visibleCards.length} products found`;
+        }
+    }
+});
+
+// Product actions
+function viewDetails(productId) {
+    showLoading();
+    window.location.href = `/product/${productId}`;
+}
+
+function viewDemo(productId) {
+    // Fetch and display demo for specific product
+    fetch(`/api/product/${productId}/demo`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.demo_video) {
+                showVideoDemo(data.demo_video);
+            } else {
+                // Show code preview instead if no video available
+                previewCode(productId);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching demo:', error);
+            // Fallback to code preview
+            previewCode(productId);
+        });
+}
+
+function showVideoDemo(videoUrl) {
+    // Create a simple video modal
+    const modal = document.getElementById('demo-modal');
+    const modalBody = modal.querySelector('.modal-body');
+    
+    modalBody.innerHTML = `
+        <video controls width="100%" style="border-radius: 8px;">
+            <source src="${videoUrl}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <p style="text-align: center; margin-top: 1rem; color: var(--text-muted);">
+            Demo video - Contact us for the full version!
+        </p>
+    `;
+    
+    document.getElementById('modal-title').textContent = 'Product Demo';
+    modal.style.display = 'block';
+}
+
+function previewCode(productId) {
+    // Show code preview modal - fetch from server instead of client-side data
+    fetch(`/api/product/${productId}/code-preview`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('modal-title').textContent = `Code Preview - ${data.name}`;
+                document.getElementById('code-preview').textContent = data.code_preview;
+                document.getElementById('demo-modal').style.display = 'block';
+            } else {
+                alert('Code preview not available for this product.');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching code preview:', error);
+            alert('Code preview not available at the moment.');
+        });
+}
+
+function contactForPurchase(productId) {
+    showLoading();
+    window.location.href = `/contact-telegram/${productId}`;
+}
+
+function loginToPurchase() {
+    window.location.href = '{{ url_for("login") }}';
+}
+
+function copyCode() {
+    const codeBlock = document.getElementById('code-preview');
+    navigator.clipboard.writeText(codeBlock.textContent).then(function() {
+        // Show success feedback
+        const btn = event.currentTarget;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        btn.style.background = 'var(--accent-green)';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.background = '';
+        }, 2000);
+    }, function(err) {
+        console.error('Could not copy text: ', err);
+        alert('Failed to copy code. Please select and copy manually.');
+    });
+}
+
+function downloadCode() {
+    const code = document.getElementById('code-preview').textContent;
+    const blob = new Blob([code], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = 'code-preview.py';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+}
+
+function closeDemo() {
+    const modal = document.getElementById('demo-modal');
+    const modalBody = modal.querySelector('.modal-body');
+    
+    // Reset modal content to original code preview structure
+    modalBody.innerHTML = `
+        <pre id="code-preview"><code></code></pre>
+        <div class="modal-actions">
+            <button class="modal-btn" onclick="copyCode()">
+                <i class="fas fa-copy"></i>
+                Copy Code
+            </button>
+            <button class="modal-btn" onclick="downloadCode()">
+                <i class="fas fa-download"></i>
+                Download Sample
+            </button>
+        </div>
+    `;
+    
+    modal.style.display = 'none';
+}
+
+function loadMoreProducts() {
+    // Simulate loading more products
+    showLoading();
+    
+    setTimeout(() => {
+        hideLoading();
+        alert('No more products to load at the moment.');
+    }, 1000);
+}
+
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+// Intersection observer for animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
+        }
+    });
+}, observerOptions);
+
+// Observe sections for animations
+document.querySelectorAll('.product-card, .feature-card, .testimonial-card').forEach(el => {
+    observer.observe(el);
+});
+</script>
+{% endblock %}

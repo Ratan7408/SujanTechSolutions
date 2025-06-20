@@ -1,0 +1,430 @@
+{% extends "base.html" %}
+
+{% block title %}Login - CyberCode Marketplace{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1 class="auth-title">
+                    <i class="fas fa-terminal"></i>
+                    Access Terminal
+                </h1>
+                <p class="auth-subtitle">Login to CyberCode Marketplace</p>
+            </div>
+
+            <div class="auth-body">
+                <!-- Terminal Window Style -->
+                <div class="terminal-login">
+                    <div class="terminal-header">
+                        <div class="terminal-buttons">
+                            <span class="btn-red"></span>
+                            <span class="btn-yellow"></span>
+                            <span class="btn-green"></span>
+                        </div>
+                        <span class="terminal-title">authentication@cybercode:~$</span>
+                    </div>
+                    
+                    <div class="terminal-body">
+                        <div class="terminal-line">
+                            <span class="prompt">$</span> sudo login --secure --marketplace
+                        </div>
+                        <div class="terminal-line">
+                            <span class="info">→</span> Initializing secure authentication...
+                        </div>
+                        <div class="terminal-line">
+                            <span class="success">✓</span> OAuth providers loaded
+                        </div>
+                        <div class="terminal-line">
+                            <span class="info">→</span> Select authentication method:
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Login Options -->
+                <div class="login-options">
+                    <a href="{{ url_for('google_auth') }}" class="login-btn google-login">
+                        <div class="login-btn-icon">
+                            <i class="fab fa-google"></i>
+                        </div>
+                        <div class="login-btn-content">
+                            <span class="login-btn-title">Continue with Google</span>
+                            <span class="login-btn-subtitle">Quick & secure authentication</span>
+                        </div>
+                        <div class="login-btn-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </a>
+
+                    <div class="divider">
+                        <span class="divider-text">OR</span>
+                    </div>
+
+                    <div class="alternative-login">
+                        <p class="alt-text">
+                            <i class="fas fa-info-circle"></i>
+                            Don't have a Google account? 
+                            <a href="https://t.me/Sujan_bhaiii" target="_blank" class="telegram-link">
+                                Contact us on Telegram
+                            </a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="login-features">
+                    <h3><i class="fas fa-shield-alt"></i> Why Create an Account?</h3>
+                    <div class="features-grid">
+                        <div class="feature-item">
+                            <i class="fas fa-download"></i>
+                            <span>Track your purchases</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-history"></i>
+                            <span>Download history</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-headset"></i>
+                            <span>Priority support</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-star"></i>
+                            <span>Exclusive content</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-comments"></i>
+                            <span>Live chat support</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-bell"></i>
+                            <span>New product alerts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Notice -->
+                <div class="security-notice">
+                    <div class="security-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="security-content">
+                        <h4>🔐 Your Privacy is Protected</h4>
+                        <p>We use Google OAuth for secure authentication. We only access your basic profile information (name, email, profile picture). No passwords are stored on our servers.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auth-footer">
+                <div class="footer-links">
+                    <a href="/">← Back to Marketplace</a>
+                    <a href="https://t.me/Sujan_bhaiii" target="_blank">Need Help?</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.auth-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    padding: 2rem 0;
+}
+
+.auth-card {
+    max-width: 500px;
+    margin: 0 auto;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.auth-header {
+    background: var(--secondary-bg);
+    padding: 2rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.auth-title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--accent-green);
+}
+
+.auth-subtitle {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.auth-body {
+    padding: 2rem;
+}
+
+.terminal-login {
+    background: var(--primary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.terminal-header {
+    background: var(--secondary-bg);
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.terminal-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.terminal-buttons span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.btn-red { background: #ff5f56; }
+.btn-yellow { background: #ffbd2e; }
+.btn-green { background: #27ca3f; }
+
+.terminal-title {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-family: var(--font-mono);
+}
+
+.terminal-body {
+    padding: 1.5rem;
+    font-family: var(--font-mono);
+}
+
+.terminal-line {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.prompt {
+    color: var(--accent-green);
+    font-weight: 700;
+}
+
+.success {
+    color: var(--accent-green);
+}
+
+.info {
+    color: var(--accent-cyan);
+}
+
+.login-options {
+    margin-bottom: 2rem;
+}
+
+.login-btn {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.login-btn:hover {
+    border-color: var(--accent-green);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 255, 136, 0.2);
+}
+
+.google-login:hover {
+    border-color: #4285f4;
+    box-shadow: 0 10px 20px rgba(66, 133, 244, 0.2);
+}
+
+.login-btn-icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    color: #4285f4;
+}
+
+.login-btn-content {
+    flex: 1;
+}
+
+.login-btn-title {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.login-btn-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.login-btn-arrow {
+    color: var(--text-muted);
+    transition: transform 0.3s ease;
+}
+
+.login-btn:hover .login-btn-arrow {
+    transform: translateX(5px);
+}
+
+.divider {
+    position: relative;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--border-color);
+}
+
+.divider-text {
+    background: var(--card-bg);
+    padding: 0 1rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    position: relative;
+}
+
+.alternative-login {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(0, 255, 136, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.alt-text {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+.telegram-link {
+    color: var(--accent-green);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.telegram-link:hover {
+    color: var(--accent-cyan);
+}
+
+.login-features {
+    margin-bottom: 2rem;
+}
+
+.login-features h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.feature-item i {
+    color: var(--accent-green);
+    width: 16px;
+}
+
+.security-notice {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(0, 255, 136, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.security-icon {
+    color: var(--accent-green);
+    font-size: 1.5rem;
+}
+
+.security-content h4 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.security-content p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.auth-footer {
+    background: var(--secondary-bg);
+    padding: 1rem 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-links {
+    display: flex;
+    justify-content: space-between;
+}
+
+.footer-links a {
+    color: var(--accent-green);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: var(--accent-cyan);
+}
+
+@media (max-width: 768px) {
+    .auth-card {
+        margin: 0 1rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .footer-links {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}

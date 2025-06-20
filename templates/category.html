@@ -1,0 +1,461 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category }} - CyberCode Marketplace{% endblock %}
+
+{% block content %}
+<div class="category-page">
+    <div class="container">
+        <!-- Breadcrumb Navigation -->
+        <nav class="breadcrumb">
+            <a href="/" class="breadcrumb-link">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">{{ category }}</span>
+        </nav>
+
+        <!-- Category Header -->
+        <div class="category-header">
+            <h1 class="category-title">
+                <i class="fas fa-layer-group"></i>
+                {{ category }}
+            </h1>
+            <p class="category-description">
+                {% if category == "Telegram Bots" %}
+                    Advanced Telegram automation tools for user management, analytics, and moderation.
+                {% elif category == "Discord Bots" %}
+                    Complete Discord server management solutions with role automation and security features.
+                {% elif category == "Automation" %}
+                    Social media, file management, and workflow automation scripts.
+                {% elif category == "Trading" %}
+                    Crypto trading bots and market analysis tools for automated trading.
+                {% elif category == "Data Tools" %}
+                    Web scraping, data extraction, and analysis utilities.
+                {% elif category == "Utilities" %}
+                    File organization, system optimization, and productivity tools.
+                {% else %}
+                    Premium software solutions for developers and power users.
+                {% endif %}
+            </p>
+            <div class="category-stats">
+                <div class="stat">
+                    <span class="stat-number">{{ products|length }}</span>
+                    <span class="stat-label">Products</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">
+                        {% set total_downloads = 0 %}
+                        {% for product in products %}
+                            {% set total_downloads = total_downloads + product.downloads %}
+                        {% endfor %}
+                        {{ total_downloads }}
+                    </span>
+                    <span class="stat-label">Downloads</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">
+                        {% if products %}
+                            {{ "%.1f"|format((products|sum(attribute='rating'))/products|length) }}
+                        {% else %}
+                            0.0
+                        {% endif %}
+                    </span>
+                    <span class="stat-label">Avg Rating</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter and Sort Options -->
+        <div class="category-filters">
+            <div class="filter-group">
+                <label for="sort-select">Sort by:</label>
+                <select id="sort-select" class="filter-select">
+                    <option value="popularity">Most Popular</option>
+                    <option value="rating">Highest Rated</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="newest">Newest First</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="price-filter">Price Range:</label>
+                <select id="price-filter" class="filter-select">
+                    <option value="all">All Prices</option>
+                    <option value="0-50">$0 - $50</option>
+                    <option value="50-100">$50 - $100</option>
+                    <option value="100-200">$100 - $200</option>
+                    <option value="200+">$200+</option>
+                </select>
+            </div>
+
+            <div class="results-count">
+                <span id="results-count">{{ products|length }}</span> products found
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="category-products">
+            {% if products %}
+                <div class="products-grid">
+                    {% for product in products %}
+                    <div class="product-card" 
+                         data-category="{{ product.category }}"
+                         data-price="{{ product.price }}"
+                         data-rating="{{ product.rating }}"
+                         data-downloads="{{ product.downloads }}">
+                        <div class="product-header">
+                            <div class="product-image">
+                                <img src="{{ product.image }}" alt="{{ product.name }}" loading="lazy">
+                                <div class="product-overlay">
+                                    <button class="demo-btn" onclick="viewDemo({{ product.id }})">
+                                        <i class="fas fa-play"></i>
+                                        View Demo
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="product-badge">{{ product.category }}</div>
+                        </div>
+                        
+                        <div class="product-content">
+                            <div class="product-title">
+                                <h3>{{ product.name }}</h3>
+                                <div class="product-rating">
+                                    <div class="stars">
+                                        {% for i in range(5) %}
+                                            {% if i < product.rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <span class="rating-value">{{ product.rating }}</span>
+                                </div>
+                            </div>
+                            
+                            <p class="product-description">{{ product.description }}</p>
+                            
+                            <div class="product-features">
+                                {% for feature in product.features[:3] %}
+                                <span class="feature-tag">
+                                    <i class="fas fa-check"></i>
+                                    {{ feature }}
+                                </span>
+                                {% endfor %}
+                                {% if product.features|length > 3 %}
+                                <span class="feature-more">+{{ product.features|length - 3 }} more</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="product-stats">
+                                <div class="stat">
+                                    <i class="fas fa-download"></i>
+                                    <span>{{ product.downloads }}</span>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-code"></i>
+                                    <span>Python</span>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Secure</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="product-footer">
+                            <div class="product-price">
+                                <span class="price">${{ "%.2f"|format(product.price) }}</span>
+                                <span class="price-label">One-time purchase</span>
+                            </div>
+                            <div class="product-actions">
+                                <button class="btn-secondary" onclick="viewDetails({{ product.id }})">
+                                    <i class="fas fa-info-circle"></i>
+                                    Details
+                                </button>
+                                <button class="btn-primary" onclick="purchaseProduct({{ product.id }})">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    Buy Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- No Products Found -->
+                <div class="no-products">
+                    <div class="no-products-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>No products found in {{ category }}</h3>
+                    <p>Check back soon for new releases or explore other categories.</p>
+                    <a href="/" class="btn-primary">
+                        <i class="fas fa-home"></i>
+                        Browse All Products
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Related Categories -->
+        <section class="related-categories">
+            <h2><i class="fas fa-layer-group"></i> Explore Other Categories</h2>
+            <div class="category-grid">
+                {% set all_categories = ["Telegram Bots", "Discord Bots", "Automation", "Trading", "Data Tools", "Utilities"] %}
+                {% for cat in all_categories %}
+                    {% if cat != category %}
+                    <a href="/category/{{ cat }}" class="category-card">
+                        <div class="category-icon">
+                            {% if cat == "Telegram Bots" %}
+                                <i class="fab fa-telegram"></i>
+                            {% elif cat == "Discord Bots" %}
+                                <i class="fab fa-discord"></i>
+                            {% elif cat == "Automation" %}
+                                <i class="fas fa-robot"></i>
+                            {% elif cat == "Trading" %}
+                                <i class="fas fa-chart-line"></i>
+                            {% elif cat == "Data Tools" %}
+                                <i class="fas fa-database"></i>
+                            {% elif cat == "Utilities" %}
+                                <i class="fas fa-tools"></i>
+                            {% endif %}
+                        </div>
+                        <h3>{{ cat }}</h3>
+                        <p>Explore {{ cat.lower() }} solutions</p>
+                    </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Demo Modal -->
+<div class="modal" id="demo-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Code Preview</h3>
+            <button class="modal-close" onclick="closeDemo()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <pre id="code-preview"><code></code></pre>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Category page specific styles */
+.category-page {
+    padding: 2rem 0;
+    min-height: 80vh;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.breadcrumb-link {
+    color: var(--accent-green);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb-link:hover {
+    color: var(--accent-cyan);
+}
+
+.breadcrumb-separator {
+    margin: 0 1rem;
+    color: var(--text-muted);
+}
+
+.breadcrumb-current {
+    color: var(--text-secondary);
+}
+
+.category-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.category-title {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.category-title i {
+    color: var(--accent-green);
+    margin-right: 1rem;
+}
+
+.category-description {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.category-stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+}
+
+.category-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-group label {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.filter-select {
+    background: var(--primary-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-family: var(--font-mono);
+}
+
+.results-count {
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.no-products {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+}
+
+.no-products-icon {
+    font-size: 4rem;
+    color: var(--accent-green);
+    margin-bottom: 2rem;
+}
+
+.no-products h3 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.no-products p {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.related-categories {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+    .category-filters {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .category-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .category-title {
+        font-size: 2rem;
+    }
+}
+</style>
+
+<script>
+// Category page specific JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    const sortSelect = document.getElementById('sort-select');
+    const priceFilter = document.getElementById('price-filter');
+    const resultsCount = document.getElementById('results-count');
+    const productCards = document.querySelectorAll('.product-card');
+
+    function filterAndSort() {
+        const sortBy = sortSelect.value;
+        const priceRange = priceFilter.value;
+        
+        let visibleCards = Array.from(productCards).filter(card => {
+            const price = parseFloat(card.dataset.price);
+            
+            if (priceRange === 'all') return true;
+            if (priceRange === '0-50') return price <= 50;
+            if (priceRange === '50-100') return price > 50 && price <= 100;
+            if (priceRange === '100-200') return price > 100 && price <= 200;
+            if (priceRange === '200+') return price > 200;
+            
+            return true;
+        });
+
+        // Hide all cards first
+        productCards.forEach(card => {
+            card.style.display = 'none';
+        });
+
+        // Sort visible cards
+        visibleCards.sort((a, b) => {
+            switch(sortBy) {
+                case 'popularity':
+                    return parseInt(b.dataset.downloads) - parseInt(a.dataset.downloads);
+                case 'rating':
+                    return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
+                case 'price-low':
+                    return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+                case 'price-high':
+                    return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+                case 'newest':
+                    return Math.random() - 0.5; // Random for demo
+                default:
+                    return 0;
+            }
+        });
+
+        // Show and reorder visible cards
+        const grid = document.querySelector('.products-grid');
+        visibleCards.forEach(card => {
+            card.style.display = 'block';
+            grid.appendChild(card);
+        });
+
+        // Update results count
+        resultsCount.textContent = visibleCards.length;
+    }
+
+    sortSelect.addEventListener('change', filterAndSort);
+    priceFilter.addEventListener('change', filterAndSort);
+});
+</script>
+{% endblock %}

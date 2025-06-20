@@ -1,0 +1,44 @@
+ # Database files
+*.db
+*.sqlite
+*.sqlite3
+cybercode.db
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environment
+venv/
+env/
+.env
+.venv
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Upload directories (optional)
+uploads/
+static/uploads/
+
+# Environment variables
+.env
+config.py

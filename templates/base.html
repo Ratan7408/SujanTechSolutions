@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CyberCode Marketplace - Premium Software & Scripts{% endblock %}</title>
+    
+    <!-- Meta tags for SEO -->
+    <meta name="description" content="Premium software, bots, and automation scripts for developers. Telegram bots, Discord bots, trading tools, and more.">
+    <meta name="keywords" content="software, bots, automation, scripts, telegram, discord, trading, python">
+    <meta name="author" content="CyberCode Marketplace">
+    
+    <!-- Open Graph meta tags -->
+    <meta property="og:title" content="CyberCode Marketplace - Premium Software & Scripts">
+    <meta property="og:description" content="Premium software solutions for developers and power users">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:image" content="{{ url_for('static', filename='images/og-image.png', _external=True) }}">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    
+    <!-- Additional head content -->
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        <div class="flash-content">
+                            <span class="flash-text">{{ message }}</span>
+                            <button class="flash-close" onclick="this.parentElement.parentElement.remove()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Matrix Rain Background -->
+    <div class="matrix-bg" id="matrix-bg"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="/">
+                    <i class="fas fa-terminal"></i>
+                    <span class="brand-text">CyberCode</span>
+                    <span class="brand-pulse">_</span>
+                </a>
+            </div>
+            
+            <div class="nav-menu">
+                <!-- Search Container -->
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search scripts..." autocomplete="off">
+                    <i class="fas fa-search search-icon"></i>
+                    <div class="search-results" id="search-results"></div>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="nav-links">
+                    <a href="/" class="nav-link">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    
+                    <!-- Categories Dropdown -->
+                    <div class="nav-link dropdown">
+                        <i class="fas fa-layer-group"></i> Categories
+                        <div class="dropdown-content">
+                            <a href="/category/1"><i class="fab fa-telegram"></i> Telegram Bots</a>
+                            <a href="/category/2"><i class="fab fa-discord"></i> Discord Bots</a>
+                            <a href="/category/3"><i class="fas fa-robot"></i> Automation</a>
+                            <a href="/category/4"><i class="fas fa-chart-line"></i> Trading</a>
+                            <a href="/category/5"><i class="fas fa-database"></i> Data Tools</a>
+                            <a href="/category/6"><i class="fas fa-tools"></i> Utilities</a>
+                        </div>
+                    </div>
+
+                    <!-- Language Selector -->
+                    <div class="nav-link dropdown">
+                        <i class="fas fa-globe"></i> 
+                        {% for code, name in config.LANGUAGES.items() %}
+                            {% if code == get_locale() %}{{ name }}{% endif %}
+                        {% endfor %}
+                        <div class="dropdown-content">
+                            {% for code, name in config.LANGUAGES.items() %}
+                                <a href="{{ url_for('change_language', language=code) }}">
+                                    {% if code == 'en' %}<i class="fas fa-flag-usa"></i>
+                                    {% elif code == 'es' %}<i class="fas fa-flag"></i>
+                                    {% elif code == 'fr' %}<i class="fas fa-flag"></i>
+                                    {% elif code == 'de' %}<i class="fas fa-flag"></i>
+                                    {% elif code == 'hi' %}<i class="fas fa-flag"></i>
+                                    {% elif code == 'ja' %}<i class="fas fa-flag"></i>
+                                    {% endif %}
+                                    {{ name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- User Authentication -->
+                    {% if current_user.is_authenticated %}
+                        <!-- Live Chat Button -->
+                        <a href="{{ url_for('chat') }}" class="nav-link chat-link">
+                            <i class="fas fa-comments"></i>
+                            <span class="chat-indicator" id="chat-indicator"></span>
+                        </a>
+
+                        <!-- User Dropdown -->
+                        <div class="nav-link dropdown user-dropdown">
+                            <div class="user-nav-info">
+                                {% if current_user.profile_pic %}
+                                    <img src="{{ current_user.profile_pic }}" alt="{{ current_user.name }}" class="user-nav-avatar">
+                                {% else %}
+                                    <div class="user-nav-avatar-placeholder">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                {% endif %}
+                                <span class="user-nav-name">{{ current_user.name.split()[0] }}</span>
+                                {% if current_user.is_admin %}
+                                    <span class="admin-indicator">
+                                        <i class="fas fa-crown"></i>
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <div class="dropdown-content user-dropdown-content">
+                                <div class="dropdown-header">
+                                    <div class="dropdown-user-info">
+                                        <strong>{{ current_user.name }}</strong>
+                                        <small>{{ current_user.email }}</small>
+                                    </div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <a href="{{ url_for('user_dashboard') }}">
+                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                                </a>
+                                <a href="{{ url_for('chat') }}">
+                                    <i class="fas fa-comments"></i> Live Chat
+                                </a>
+                                {% if current_user.is_admin %}
+                                    <div class="dropdown-divider"></div>
+                                    <a href="/admin/" class="admin-link">
+                                        <i class="fas fa-cogs"></i> Admin Panel
+                                    </a>
+                                {% endif %}
+                                <div class="dropdown-divider"></div>
+                                <a href="https://t.me/Sujan_bhaiii" target="_blank">
+                                    <i class="fab fa-telegram"></i> Telegram Support
+                                </a>
+                                <a href="{{ url_for('logout') }}" class="logout-link">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <!-- Login Button -->
+                        <a href="{{ url_for('login') }}" class="nav-link login-btn">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3><i class="fas fa-terminal"></i> CyberCode</h3>
+                <p>Premium software solutions for developers and power users. Built with passion for automation and efficiency.</p>
+                <div class="social-links">
+                    <a href="https://t.me/Sujan_bhaiii" target="_blank" title="Telegram">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <a href="#" target="_blank" title="Discord">
+                        <i class="fab fa-discord"></i>
+                    </a>
+                    <a href="#" target="_blank" title="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" target="_blank" title="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Categories</h4>
+                <ul>
+                    <li><a href="/category/1">Telegram Bots</a></li>
+                    <li><a href="/category/2">Discord Bots</a></li>
+                    <li><a href="/category/3">Automation Tools</a></li>
+                    <li><a href="/category/4">Trading Bots</a></li>
+                    <li><a href="/category/5">Data Tools</a></li>
+                    <li><a href="/category/6">Utilities</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="{{ url_for('chat') }}">Live Chat Support</a></li>
+                    <li><a href="https://t.me/Sujan_bhaiii" target="_blank">Telegram Support</a></li>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">API Reference</a></li>
+                    <li><a href="#">Contact Support</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">License Agreement</a></li>
+                    <li><a href="#">Refund Policy</a></li>
+                    <li><a href="#">DMCA</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Newsletter</h4>
+                <p>Stay updated with new releases and exclusive offers.</p>
+                <div class="newsletter-form">
+                    <input type="email" placeholder="Enter your email" id="newsletter-email">
+                    <button type="button" onclick="subscribeNewsletter()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="newsletter-features">
+                    <div class="feature">
+                        <i class="fas fa-rocket"></i>
+                        <span>New product alerts</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-percent"></i>
+                        <span>Exclusive discounts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <div class="footer-bottom-left">
+                    <p>&copy; {{ current_year }} CyberCode Marketplace. All rights reserved.</p>
+                    <p class="footer-tagline">// Empowering developers with premium tools</p>
+                </div>
+                <div class="footer-bottom-right">
+                    <div class="footer-stats">
+                        <div class="footer-stat">
+                            <span class="stat-number">1000+</span>
+                            <span class="stat-label">Happy Users</span>
+                        </div>
+                        <div class="footer-stat">
+                            <span class="stat-number">24/7</span>
+                            <span class="stat-label">Support</span>
+                        </div>
+                        <div class="footer-stat">
+                            <span class="stat-number">100%</span>
+                            <span class="stat-label">Secure</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Live Chat Widget (for quick access) -->
+    {% if current_user.is_authenticated %}
+    <div class="chat-widget" id="chat-widget">
+        <div class="chat-widget-button" onclick="toggleChatWidget()">
+            <i class="fas fa-comments"></i>
+            <span class="chat-widget-badge" id="chat-widget-badge" style="display: none;">1</span>
+        </div>
+        <div class="chat-widget-popup" id="chat-widget-popup" style="display: none;">
+            <div class="chat-widget-header">
+                <h4>Quick Support</h4>
+                <button onclick="toggleChatWidget()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="chat-widget-body">
+                <p>Need help? Start a conversation!</p>
+                <div class="chat-widget-actions">
+                    <a href="{{ url_for('chat') }}" class="widget-btn primary">
+                        <i class="fas fa-comments"></i>
+                        Open Live Chat
+                    </a>
+                    <a href="https://t.me/Sujan_bhaiii" target="_blank" class="widget-btn telegram">
+                        <i class="fab fa-telegram"></i>
+                        Telegram
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner-ring"></div>
+            <div class="loading-text">Loading...</div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    
+    <!-- Additional scripts -->
+    {% block scripts %}{% endblock %}
+
+    <!-- Enhanced JavaScript for new features -->
+    <script>
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            const mobileToggle = document.querySelector('.mobile-menu-toggle');
+            
+            navLinks.classList.toggle('mobile-open');
+            mobileToggle.classList.toggle('active');
+        }
+
+        // Chat widget
+        function toggleChatWidget() {
+            const popup = document.getElementById('chat-widget-popup');
+            popup.style.display = popup.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Newsletter subscription
+        function subscribeNewsletter() {
+            const email = document.getElementById('newsletter-email').value;
+            if (email) {
+                // Simulate subscription
+                alert('Thank you for subscribing! You\'ll receive updates on new products and offers.');
+                document.getElementById('newsletter-email').value = '';
+            }
+        }
+
+        // Loading overlay
+        function showLoading() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-overlay').style.display = 'none';
+        }
+
+        // Auto-hide flash messages
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.animation = 'slideOut 0.5s ease-in-out forwards';
+                    setTimeout(() => message.remove(), 500);
+                }, 5000);
+            });
+        });
+
+        // Enhanced search with keyboard navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search-input');
+            const searchResults = document.getElementById('search-results');
+            let selectedIndex = -1;
+
+            if (searchInput) {
+                searchInput.addEventListener('keydown', function(e) {
+                    const results = searchResults.querySelectorAll('.search-result');
+                    
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        selectedIndex = Math.min(selectedIndex + 1, results.length - 1);
+                        updateSelection(results);
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        selectedIndex = Math.max(selectedIndex - 1, -1);
+                        updateSelection(results);
+                    } else if (e.key === 'Enter' && selectedIndex >= 0) {
+                        e.preventDefault();
+                        results[selectedIndex].click();
+                    }
+                });
+            }
+
+            function updateSelection(results) {
+                results.forEach((result, index) => {
+                    result.classList.toggle('selected', index === selectedIndex);
+                });
+            }
+        });
+
+        // Performance monitoring
+        window.addEventListener('load', function() {
+            const loadTime = performance.now();
+            if (loadTime > 3000) {
+                console.warn('Page load time:', loadTime.toFixed(2), 'ms');
+            }
+        });
+    </script>
+
+    <style>
+        /* Additional styles for enhanced features */
+        
+        /* Flash Messages */
+        .flash-messages {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .flash-message {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            min-width: 300px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .flash-success {
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .flash-error {
+            border-left: 4px solid var(--accent-pink);
+        }
+
+        .flash-info {
+            border-left: 4px solid var(--accent-cyan);
+        }
+
+        .flash-warning {
+            border-left: 4px solid var(--accent-orange);
+        }
+
+        .flash-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .flash-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        /* User Navigation */
+        .user-nav-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-nav-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-green);
+        }
+
+        .user-nav-avatar-placeholder {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--secondary-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            border: 2px solid var(--accent-green);
+        }
+
+        .user-nav-name {
+            font-weight: 600;
+        }
+
+        .admin-indicator {
+            color: var(--accent-orange);
+            font-size: 0.8rem;
+        }
+
+        .user-dropdown-content {
+            min-width: 250px;
+            padding: 0;
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            background: var(--secondary-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dropdown-user-info strong {
+            color: var(--text-primary);
+            display: block;
+        }
+
+        .dropdown-user-info small {
+            color: var(--text-muted);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 0.5rem 0;
+        }
+
+        .admin-link {
+            color: var(--accent-orange) !important;
+        }
+
+        .logout-link {
+            color: var(--accent-pink) !important;
+        }
+
+        /* Chat Widget */
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1500;
+        }
+
+        .chat-widget-button {
+            width: 60px;
+            height: 60px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-bg);
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .chat-widget-button:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-widget-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--accent-pink);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .chat-widget-popup {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 300px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .chat-widget-header {
+            background: var(--secondary-bg);
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-widget-body {
+            padding: 1rem;
+        }
+
+        .chat-widget-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .widget-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .widget-btn.primary {
+            background: var(--accent-green);
+            color: var(--primary-bg);
+        }
+
+        .widget-btn.telegram {
+            background: #0088cc;
+            color: white;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .loading-spinner {
+            text-align: center;
+        }
+
+        .spinner-ring {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--accent-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+        }
+
+        /* Newsletter Form */
+        .newsletter-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .newsletter-form input {
+            flex: 1;
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem;
+            border-radius: 5px;
+        }
+
+        .newsletter-form button {
+            background: var(--accent-green);
+            color: var(--primary-bg);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .newsletter-features {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .newsletter-features .feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .newsletter-features .feature i {
+            color: var(--accent-green);
+            width: 16px;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 4px;
+        }
+
+        .mobile-menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--card-bg);
+                border: 1px solid var(--border-color);
+                border-top: none;
+                flex-direction: column;
+                padding: 1rem;
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+
+            .nav-links.mobile-open {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .search-container {
+                order: -1;
+                margin-bottom: 1rem;
+            }
+
+            .search-container input {
+                width: 100%;
+            }
+
+            .flash-messages {
+                right: 10px;
+                left: 10px;
+            }
+
+            .flash-message {
+                min-width: auto;
+            }
+
+            .chat-widget {
+                bottom: 10px;
+                right: 10px;
+            }
+
+            .chat-widget-popup {
+                width: 280px;
+            }
+        }
+    </style>
+</body>
+</html>

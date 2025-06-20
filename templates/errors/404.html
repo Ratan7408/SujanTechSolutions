@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}500 - Server Error{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="container">
+        <div class="error-content">
+            <div class="error-visual">
+                <div class="error-code">500</div>
+                <div class="error-glitch" data-text="SERVER ERROR">SERVER ERROR</div>
+            </div>
+            
+            <div class="error-info">
+                <h1>Internal Server Error</h1>
+                <p class="error-message">
+                    Oops! Something went wrong on our end. Our servers are experiencing technical difficulties.
+                    Our team has been notified and is working to fix this issue.
+                </p>
+                
+                <div class="error-details">
+                    <div class="detail-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>This error has been automatically reported</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-tools"></i>
+                        <span>Our technical team is investigating</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Please try again in a few minutes</span>
+                    </div>
+                </div>
+                
+                <div class="error-actions">
+                    <a href="{{ url_for('index') }}" class="btn-primary">
+                        <i class="fas fa-home"></i>
+                        Return Home
+                    </a>
+                    <a href="javascript:location.reload()" class="btn-secondary">
+                        <i class="fas fa-redo"></i>
+                        Try Again
+                    </a>
+                    <a href="https://t.me/Sujan_bhaiii" target="_blank" class="btn-telegram">
+                        <i class="fab fa-telegram"></i>
+                        Contact Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    padding: 2rem 0;
+}
+
+.error-content {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.error-visual {
+    margin-bottom: 3rem;
+}
+
+.error-code {
+    font-size: 8rem;
+    font-weight: 900;
+    color: var(--accent-pink);
+    text-shadow: 0 0 20px rgba(255, 0, 136, 0.5);
+    margin-bottom: 1rem;
+    font-family: var(--font-mono);
+}
+
+.error-glitch {
+    font-size: 1.5rem;
+    color: var(--accent-orange);
+    position: relative;
+    animation: glitch 2s infinite;
+}
+
+.error-glitch::before,
+.error-glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.error-glitch::before {
+    animation: glitch-1 0.5s infinite;
+    color: var(--accent-cyan);
+    z-index: -1;
+}
+
+.error-glitch::after {
+    animation: glitch-2 0.5s infinite;
+    color: var(--accent-green);
+    z-index: -2;
+}
+
+@keyframes glitch {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+}
+
+@keyframes glitch-1 {
+    0%, 100% { transform: translate(0); }
+    10% { transform: translate(-2px, -2px); }
+    20% { transform: translate(2px, 2px); }
+}
+
+@keyframes glitch-2 {
+    0%, 100% { transform: translate(0); }
+    10% { transform: translate(2px, 0); }
+    20% { transform: translate(-2px, 0); }
+}
+
+.error-info h1 {
+    font-size: 3rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.error-details {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+}
+
+.detail-item:last-child {
+    margin-bottom: 0;
+}
+
+.detail-item i {
+    color: var(--accent-orange);
+    width: 20px;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-telegram {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: var(--accent-green);
+    color: var(--primary-bg);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-telegram {
+    background: #0088cc;
+    color: white;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-telegram:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+    .error-code {
+        font-size: 6rem;
+    }
+    
+    .error-info h1 {
+        font-size: 2rem;
+    }
+    
+    .error-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn-primary,
+    .btn-secondary,
+    .btn-telegram {
+        width: 200px;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}

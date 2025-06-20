@@ -1,0 +1,1043 @@
+{% extends "base.html" %}
+
+{% block title %}Live Chat - CyberCode Marketplace{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="container">
+        <div class="chat-interface">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-title">
+                    <div class="chat-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="chat-info">
+                        <h2>Live Support Chat</h2>
+                        <p class="chat-status">
+                            <span class="status-indicator online"></span>
+                            Support team is online
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="chat-actions">
+                    <button class="chat-btn" onclick="clearChat()" title="Clear Chat">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="chat-btn" onclick="toggleChatSettings()" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="chat-btn" onclick="minimizeChat()" title="Minimize">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Messages Area -->
+            <div class="chat-messages" id="chat-messages">
+                <!-- Welcome Message -->
+                <div class="message system-message">
+                    <div class="message-content">
+                        <div class="message-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-text">
+                            <p><strong>🤖 CyberCode Assistant</strong></p>
+                            <p>Welcome to our live support chat! How can we help you today?</p>
+                            <div class="quick-actions">
+                                <button class="quick-btn" onclick="sendQuickMessage('I need help with a product')">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    Product Help
+                                </button>
+                                <button class="quick-btn" onclick="sendQuickMessage('I have a technical issue')">
+                                    <i class="fas fa-bug"></i>
+                                    Technical Issue
+                                </button>
+                                <button class="quick-btn" onclick="sendQuickMessage('I want to request a custom script')">
+                                    <i class="fas fa-code"></i>
+                                    Custom Request
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="message-time">Just now</div>
+                </div>
+
+                <!-- Typing Indicator -->
+                <div class="typing-indicator" id="typing-indicator" style="display: none;">
+                    <div class="message-content">
+                        <div class="message-icon">
+                            <i class="fas fa-user-headset"></i>
+                        </div>
+                        <div class="typing-animation">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                    <div class="message-text">Support is typing...</div>
+                </div>
+            </div>
+
+            <!-- Chat Input Area -->
+            <div class="chat-input-area">
+                <div class="chat-input-container">
+                    <div class="input-actions">
+                        <button class="input-btn" onclick="attachFile()" title="Attach File">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <button class="input-btn" onclick="addEmoji()" title="Add Emoji">
+                            <i class="fas fa-smile"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="input-wrapper">
+                        <textarea id="message-input" 
+                                placeholder="Type your message here..." 
+                                rows="1"
+                                onkeydown="handleKeyDown(event)"
+                                oninput="handleInput(this)"></textarea>
+                        <div class="input-counter">
+                            <span id="char-counter">0</span>/500
+                        </div>
+                    </div>
+                    
+                    <button id="send-button" class="send-btn" onclick="sendMessage()" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Send</span>
+                    </button>
+                </div>
+
+                <!-- Chat Features -->
+                <div class="chat-features">
+                    <div class="feature-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>End-to-end encrypted</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Average response: 2 minutes</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-users"></i>
+                        <span>24/7 support available</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Sidebar -->
+        <div class="chat-sidebar">
+            <!-- User Info -->
+            <div class="sidebar-section user-info">
+                <div class="user-avatar">
+                    {% if current_user.profile_pic %}
+                        <img src="{{ current_user.profile_pic }}" alt="{{ current_user.name }}">
+                    {% else %}
+                        <div class="avatar-placeholder">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="user-details">
+                    <h3>{{ current_user.name }}</h3>
+                    <p>{{ current_user.email }}</p>
+                    {% if current_user.is_admin %}
+                        <span class="user-badge admin">Admin</span>
+                    {% else %}
+                        <span class="user-badge member">Member</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="sidebar-section faq-section">
+                <h3><i class="fas fa-question-circle"></i> Frequently Asked</h3>
+                <div class="faq-list">
+                    <div class="faq-item" onclick="sendQuickMessage('How do I download my purchased software?')">
+                        <h4>How do I download my purchased software?</h4>
+                        <p>Click to ask this question</p>
+                    </div>
+                    <div class="faq-item" onclick="sendQuickMessage('Can you create custom scripts for me?')">
+                        <h4>Can you create custom scripts?</h4>
+                        <p>Click to ask about custom development</p>
+                    </div>
+                    <div class="faq-item" onclick="sendQuickMessage('What payment methods do you accept?')">
+                        <h4>What payment methods do you accept?</h4>
+                        <p>Click to ask about payments</p>
+                    </div>
+                    <div class="faq-item" onclick="sendQuickMessage('Do you provide refunds?')">
+                        <h4>Do you provide refunds?</h4>
+                        <p>Click to ask about refund policy</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="sidebar-section quick-actions">
+                <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                <div class="action-buttons">
+                    <a href="{{ url_for('index') }}" class="action-btn">
+                        <i class="fas fa-store"></i>
+                        Browse Products
+                    </a>
+                    <a href="{{ url_for('user_dashboard') }}" class="action-btn">
+                        <i class="fas fa-user"></i>
+                        My Dashboard
+                    </a>
+                    <a href="https://t.me/Sujan_bhaiii" target="_blank" class="action-btn telegram">
+                        <i class="fab fa-telegram"></i>
+                        Telegram Support
+                    </a>
+                </div>
+            </div>
+
+            <!-- Support Hours -->
+            <div class="sidebar-section support-hours">
+                <h3><i class="fas fa-clock"></i> Support Hours</h3>
+                <div class="hours-list">
+                    <div class="hour-item">
+                        <span class="day">Monday - Friday</span>
+                        <span class="time">9:00 AM - 10:00 PM</span>
+                    </div>
+                    <div class="hour-item">
+                        <span class="day">Saturday</span>
+                        <span class="time">10:00 AM - 8:00 PM</span>
+                    </div>
+                    <div class="hour-item">
+                        <span class="day">Sunday</span>
+                        <span class="time">12:00 PM - 6:00 PM</span>
+                    </div>
+                </div>
+                <p class="timezone-note">All times in UTC. Automated responses available 24/7.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- File Upload Modal -->
+<div class="modal" id="file-upload-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Attach File</h3>
+            <button class="modal-close" onclick="closeFileModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="file-upload-area" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Drag and drop files here or click to browse</p>
+                <input type="file" id="file-input" multiple accept=".jpg,.jpeg,.png,.gif,.pdf,.txt,.log">
+                <button class="btn-upload" onclick="document.getElementById('file-input').click()">
+                    Choose Files
+                </button>
+            </div>
+            <div class="file-restrictions">
+                <p><strong>Allowed file types:</strong> Images (JPG, PNG, GIF), Documents (PDF, TXT), Log files</p>
+                <p><strong>Maximum file size:</strong> 10MB per file</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.chat-container {
+    padding: 2rem 0;
+    min-height: 80vh;
+}
+
+.chat-interface {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 2rem;
+    height: 700px;
+}
+
+.chat-messages {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    background: var(--secondary-bg);
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 15px 15px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.chat-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--accent-green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-bg);
+    font-size: 1.5rem;
+}
+
+.chat-info h2 {
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    font-size: 1.5rem;
+}
+
+.chat-status {
+    color: var(--text-secondary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent-green);
+    animation: pulse 2s infinite;
+}
+
+.status-indicator.online {
+    background: var(--accent-green);
+}
+
+.status-indicator.offline {
+    background: var(--text-muted);
+}
+
+.chat-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.chat-btn {
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.chat-btn:hover {
+    background: var(--accent-green);
+    color: var(--primary-bg);
+    border-color: var(--accent-green);
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.message {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    max-width: 80%;
+}
+
+.system-message {
+    align-self: center;
+    max-width: 90%;
+    margin: 1rem 0;
+}
+
+.message-content {
+    background: var(--primary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 1rem 1.5rem;
+    position: relative;
+}
+
+.system-message .message-content {
+    background: rgba(0, 255, 136, 0.1);
+    border-color: rgba(0, 255, 136, 0.3);
+    text-align: center;
+}
+
+.message-icon {
+    width: 30px;
+    height: 30px;
+    background: var(--accent-green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-bg);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.message-text p {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.message-text p:last-child {
+    margin-bottom: 0;
+}
+
+.quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.quick-btn {
+    background: var(--accent-green);
+    color: var(--primary-bg);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quick-btn:hover {
+    background: var(--accent-cyan);
+    transform: translateY(-2px);
+}
+
+.message-time {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.typing-indicator {
+    align-self: flex-start;
+}
+
+.typing-animation {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 0.5rem;
+}
+
+.typing-animation span {
+    width: 8px;
+    height: 8px;
+    background: var(--accent-green);
+    border-radius: 50%;
+    animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-animation span:nth-child(1) { animation-delay: -0.32s; }
+.typing-animation span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typing {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
+
+.user-message {
+    align-self: flex-end;
+}
+
+.user-message .message-content {
+    background: var(--accent-green);
+    color: var(--primary-bg);
+}
+
+.admin-message {
+    align-self: flex-start;
+}
+
+.admin-message .message-content {
+    background: var(--accent-purple);
+    color: white;
+}
+
+.chat-input-area {
+    background: var(--secondary-bg);
+    padding: 1.5rem 2rem;
+    border-top: 1px solid var(--border-color);
+    border-radius: 0 0 15px 15px;
+}
+
+.chat-input-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.input-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input-btn {
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.input-btn:hover {
+    background: var(--accent-green);
+    color: var(--primary-bg);
+    border-color: var(--accent-green);
+}
+
+.input-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+#message-input {
+    width: 100%;
+    background: var(--primary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1rem;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    resize: none;
+    min-height: 50px;
+    max-height: 120px;
+    transition: border-color 0.3s ease;
+}
+
+#message-input:focus {
+    outline: none;
+    border-color: var(--accent-green);
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+.input-counter {
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.send-btn {
+    background: var(--accent-green);
+    color: var(--primary-bg);
+    border: none;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 100px;
+}
+
+.send-btn:hover:not(:disabled) {
+    background: var(--accent-cyan);
+    transform: translateY(-2px);
+}
+
+.send-btn:disabled {
+    background: var(--text-muted);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.chat-features {
+    display: flex;
+    justify-content: space-around;
+    gap: 1rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.feature-item i {
+    color: var(--accent-green);
+}
+
+.chat-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.sidebar-section {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 1.5rem;
+}
+
+.sidebar-section h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-info {
+    text-align: center;
+}
+
+.user-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--accent-green);
+    margin: 0 auto 1rem;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--secondary-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 2rem;
+}
+
+.user-details h3 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.user-details p {
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.user-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.user-badge.admin {
+    background: var(--accent-orange);
+    color: white;
+}
+
+.user-badge.member {
+    background: var(--accent-green);
+    color: var(--primary-bg);
+}
+
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.faq-item {
+    background: var(--primary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+    border-color: var(--accent-green);
+    background: rgba(0, 255, 136, 0.05);
+}
+
+.faq-item h4 {
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.faq-item p {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--primary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.action-btn:hover {
+    border-color: var(--accent-green);
+    background: rgba(0, 255, 136, 0.05);
+}
+
+.action-btn.telegram {
+    background: #0088cc;
+    color: white;
+    border-color: #0088cc;
+}
+
+.action-btn.telegram:hover {
+    background: #006699;
+}
+
+.hours-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.hour-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.hour-item:last-child {
+    border-bottom: none;
+}
+
+.day {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.time {
+    color: var(--accent-green);
+    font-family: var(--font-mono);
+}
+
+.timezone-note {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-top: 1rem;
+    text-align: center;
+    font-style: italic;
+}
+
+/* File Upload Modal */
+.file-upload-area {
+    border: 2px dashed var(--border-color);
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.file-upload-area:hover {
+    border-color: var(--accent-green);
+    background: rgba(0, 255, 136, 0.05);
+}
+
+.file-upload-area i {
+    font-size: 3rem;
+    color: var(--accent-green);
+    margin-bottom: 1rem;
+}
+
+.btn-upload {
+    background: var(--accent-green);
+    color: var(--primary-bg);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.file-restrictions {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(0, 255, 136, 0.05);
+    border-radius: 8px;
+}
+
+.file-restrictions p {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin: 0.25rem 0;
+}
+
+@media (max-width: 768px) {
+    .chat-interface {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    
+    .chat-input-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .input-actions {
+        flex-direction: row;
+        justify-content: center;
+    }
+    
+    .send-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .chat-features {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+// Initialize Socket.IO
+const socket = io();
+const messageInput = document.getElementById('message-input');
+const chatMessages = document.getElementById('chat-messages');
+const sendButton = document.getElementById('send-button');
+const charCounter = document.getElementById('char-counter');
+const typingIndicator = document.getElementById('typing-indicator');
+
+// Join chat room
+const chatRoom = 'support_{{ current_user.id }}';
+socket.emit('join', {room: chatRoom});
+
+// Handle input changes
+function handleInput(textarea) {
+    const length = textarea.value.length;
+    charCounter.textContent = length;
+    
+    // Enable/disable send button
+    sendButton.disabled = length === 0 || length > 500;
+    
+    // Auto-resize textarea
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+    
+    // Typing indicator
+    if (length > 0) {
+        socket.emit('typing', {room: chatRoom, typing: true});
+    } else {
+        socket.emit('typing', {room: chatRoom, typing: false});
+    }
+}
+
+// Handle key press
+function handleKeyDown(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+    }
+}
+
+// Send message
+function sendMessage() {
+    const message = messageInput.value.trim();
+    if (message && message.length <= 500) {
+        // Add message to chat
+        addMessage(message, 'user');
+        
+        // Send via socket
+        socket.emit('message', {
+            room: chatRoom,
+            message: message
+        });
+        
+        // Clear input
+        messageInput.value = '';
+        handleInput(messageInput);
+        
+        // Simulate admin response after delay
+        setTimeout(() => {
+            showTypingIndicator();
+            setTimeout(() => {
+                hideTypingIndicator();
+                addMessage('Thank you for your message! A support agent will respond shortly. For immediate assistance, please contact us on Telegram @Sujan_bhaiii', 'admin');
+            }, 2000);
+        }, 1000);
+    }
+}
+
+// Send quick message
+function sendQuickMessage(message) {
+    messageInput.value = message;
+    handleInput(messageInput);
+    sendMessage();
+}
+
+// Add message to chat
+function addMessage(message, sender) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}-message`;
+    
+    const now = new Date();
+    const time = now.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'});
+    
+    messageDiv.innerHTML = `
+        <div class="message-content">
+            <div class="message-text">
+                <p>${message}</p>
+            </div>
+        </div>
+        <div class="message-time">${time}</div>
+    `;
+    
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Show/hide typing indicator
+function showTypingIndicator() {
+    typingIndicator.style.display = 'flex';
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function hideTypingIndicator() {
+    typingIndicator.style.display = 'none';
+}
+
+// Socket event listeners
+socket.on('message', function(data) {
+    if (data.user !== '{{ current_user.name }}') {
+        addMessage(data.message, 'admin');
+    }
+});
+
+socket.on('typing', function(data) {
+    if (data.typing) {
+        showTypingIndicator();
+    } else {
+        hideTypingIndicator();
+    }
+});
+
+// Chat functions
+function clearChat() {
+    if (confirm('Are you sure you want to clear the chat history?')) {
+        const messages = chatMessages.querySelectorAll('.message:not(.system-message)');
+        messages.forEach(msg => msg.remove());
+    }
+}
+
+function toggleChatSettings() {
+    alert('Chat settings panel coming soon!');
+}
+
+function minimizeChat() {
+    const chatInterface = document.querySelector('.chat-interface');
+    chatInterface.style.display = chatInterface.style.display === 'none' ? 'grid' : 'none';
+}
+
+function attachFile() {
+    document.getElementById('file-upload-modal').style.display = 'block';
+}
+
+function closeFileModal() {
+    document.getElementById('file-upload-modal').style.display = 'none';
+}
+
+function addEmoji() {
+    const emojis = ['😀', '😊', '😍', '🤔', '👍', '👎', '❤️', '🔥', '💯', '🚀'];
+    const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+    messageInput.value += emoji;
+    handleInput(messageInput);
+    messageInput.focus();
+}
+
+// File upload handlers
+function dragOverHandler(ev) {
+    ev.preventDefault();
+    ev.currentTarget.style.borderColor = 'var(--accent-green)';
+}
+
+function dropHandler(ev) {
+    ev.preventDefault();
+    ev.currentTarget.style.borderColor = 'var(--border-color)';
+    
+    const files = ev.dataTransfer.files;
+    handleFiles(files);
+}
+
+function handleFiles(files) {
+    for (let file of files) {
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+            alert(`File ${file.name} is too large. Maximum size is 10MB.`);
+            continue;
+        }
+        
+        // Add file to chat
+        addMessage(`📎 File attached: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`, 'user');
+    }
+    
+    closeFileModal();
+}
+
+// Initialize chat
+document.addEventListener('DOMContentLoaded', function() {
+    messageInput.focus();
+    
+    // Add welcome animation
+    setTimeout(() => {
+        const welcomeMsg = document.querySelector('.system-message');
+        welcomeMsg.style.animation = 'fadeInUp 0.5s ease-out';
+    }, 500);
+});
+</script>
+{% endblock %}
