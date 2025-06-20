@@ -1726,6 +1726,8 @@ def utility_processor():
     )
 
 if __name__ == '__main__':
+    import os
+    
     try:
         with app.app_context():
             print("🔧 Setting up database...")
@@ -1741,27 +1743,33 @@ if __name__ == '__main__':
                 print(f"   🤖 Products: {Product.query.count()}")
     except Exception as e:
         print(f"⚠️ Database setup error: {e}")
-        print("   💡 Try visiting http://localhost:5000/reset-database to fix this")
+        print("   💡 Try visiting /reset-database to fix this")
     
-    print("\n🚀 CyberCode Marketplace starting...")
-    print("📊 Admin panel: http://localhost:5000/admin/")
-    print("🔑 Admin access: http://localhost:5000/admin-access")
-    print("🔄 Database reset: http://localhost:5000/reset-database")
-    print("📁 Static files setup: http://localhost:5000/setup-static")
+    # Railway deployment configuration
+    port = int(os.environ.get('PORT', 5000))
+    host = os.environ.get('HOST', '0.0.0.0')
+    debug = os.environ.get('FLASK_ENV') != 'production'
+    
+    print(f"\n🚀 CyberCode Marketplace starting on {host}:{port}...")
+    print("📊 Admin panel: /admin/")
+    print("🔑 Admin access: /admin-access")
+    print("🔄 Database reset: /reset-database")
+    print("📁 Static files setup: /setup-static")
     print("💬 Live chat enabled")
     print("🌍 Multi-language support active")
     print("🔐 Google OAuth configured" if google else "⚠️  Google OAuth disabled (check credentials)")
-    print("🧪 Manual admin login: http://localhost:5000/manual-login")
+    print("🧪 Manual admin login: /manual-login")
     print("\n🎯 Quick Access URLs:")
-    print("   • Homepage: http://localhost:5000")
-    print("   • Admin Panel: http://localhost:5000/admin-access")
-    print("   • Database Reset: http://localhost:5000/reset-database")
-    print("   • Static Files Setup: http://localhost:5000/setup-static")
-    print("   • Login: http://localhost:5000/login")
+    print("   • Homepage: /")
+    print("   • Admin Panel: /admin-access")
+    print("   • Database Reset: /reset-database")
+    print("   • Static Files Setup: /setup-static")
+    print("   • Login: /login")
     print("\n📁 Static Files:")
     print("   • Create folder: static/images/")
     print("   • Add your images: telegram-bot.jpg, discord-bot.png, etc.")
     print("   • Use URLs: /static/images/telegram-bot.jpg")
     print("\n" + "="*50)
     
-    socketio.run(app, debug=False, host='0.0.0.0', port=port)
+    # Use socketio.run for Railway
+    socketio.run(app, debug=debug, host=host, port=port, allow_unsafe_werkzeug=True)
